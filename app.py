@@ -1,28 +1,52 @@
 import pandas as pd
+from pandas import DataFrame, Series
 import numpy as np
 import streamlit as st
 
-from flask import Flask, render_template
+from flask import Flask, render_template,request
 from model import Model
+import pickle
 
-app=Flask(__name__,template_folder='web_codes')
-model = Model()
-def get_recommendations():
-    recommend = model.recommend('Animal Farm')
-    return recommend
+popular_df = pickle.load(open('objects/popular.pkl','rb'))
+pt = pickle.load(open('objects/pt.pkl','rb'))
+books = pickle.load(open('objects/books.pkl','rb'))
+similarity_scores = pickle.load(open('objects/similarity_scores.pkl','rb'))
 
-@app.route('/recommender.ejs')
-# @app.route('/')
+app = Flask(__name__)
+
+@app.route('/')
 def index():
-    return render_template('index.html')
-    
-@app.route('/recommendations')
-def recommendations():
-    recommended_books= get_recommendations()
-    try:
-        return render_template('recommender.html', recommended_books=recommended_books)
-    except:
-        return f"The catch value doesnot exist."
+    return render_template('index.html',
+                           book_name = list(popular_df['Book-Title'].values),
+                           author=list(popular_df['Book-Author'].values),
+                           image=list(popular_df['Image-URL-M'].values),
+                           votes=list(popular_df['num_ratings'].values),
+                           rating=list(popular_df['avg_rating'].values)
+                           )
+
+@app.route('/recommend')
+def recommend_ui():
+    return render_template('recommend.html')
+
+@app.route('/recommend_books',methods=['post'])
+def recommend():
+    user_input = request.form.get('user_input')
+    index = np.where(pt.index == user_input)[0][0]
+    similar_items = sorted(list(enumerate(similarity_scores[index])), key=lambda x: x[1], reverse=True)[1:5]
+
+    data = []
+    for i in similar_items:
+        item = []
+        temp_df = books[books['Book-Title'] == pt.index[i[0]]]
+        item.extend(list(temp_df.drop_duplicates('Book-Title')['Book-Title'].values))
+        item.extend(list(temp_df.drop_duplicates('Book-Title')['Book-Author'].values))
+        item.extend(list(temp_df.drop_duplicates('Book-Title')['Image-URL-M'].values))
+
+        data.append(item)
+
+    print(data)
+
+    return render_template('recommend.html',data=data)
 
 if __name__ == '__main__':
     app.run(debug=True)

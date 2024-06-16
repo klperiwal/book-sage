@@ -4,27 +4,29 @@ import matplotlib.pyplot as plt
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.model_selection import train_test_split
 
+
+
 class Model():
     def __init__(self) -> None:
         print('init running')
-        books = pd.read_csv("Books.csv")
-        users = pd.read_csv("Users.csv")
-        ratings = pd.read_csv("Ratings.csv")
-        name_rate = ratings.merge(books, on='ISBN')
+        books= pd.read_csv("Datasets/Books.csv")
+        users= pd.read_csv("Datasets/Users.csv")
+        ratings= pd.read_csv("Datasets/Ratings.csv")
+        name_rate= ratings.merge(books, on='ISBN')
 
-        num_rating = name_rate.groupby('Book-Title').count()['Book-Rating'].reset_index()
+        num_rating= name_rate.groupby('Book-Title').count()['Book-Rating'].reset_index()
         num_rating.rename(columns={'Book-Rating': 'Num-Rate'}, inplace=True)
 
-        avg_rating = name_rate.groupby('Book-Title')['Book-Rating'].mean().reset_index()
+        avg_rating= name_rate.groupby('Book-Title')['Book-Rating'].mean().reset_index()
         avg_rating.rename(columns={'Book-Rating': 'Avg-Rate'}, inplace=True)
 
-        final_df = num_rating.merge(avg_rating, on='Book-Title')
-        final_df = final_df[final_df['Num-Rate'] >= 250].sort_values('Avg-Rate', ascending=False).head()
+        final_df= num_rating.merge(avg_rating, on='Book-Title')
+        final_df= final_df[final_df['Num-Rate'] >= 250].sort_values('Avg-Rate', ascending=False).head()
 
-        final_df = final_df.merge(books, on='Book-Title').drop_duplicates('Book-Title')[['Book-Title', 'Book-Author', 'Num-Rate', 'Avg-Rate', 'Image-URL-M']]
-        x = name_rate.groupby('User-ID').count()['Book-Rating'] > 200
-        literate_ppl = x[x].index
-        newrating = name_rate[name_rate['User-ID'].isin(literate_ppl)]
+        final_df= final_df.merge(books, on='Book-Title').drop_duplicates('Book-Title')[['Book-Title', 'Book-Author', 'Num-Rate', 'Avg-Rate', 'Image-URL-M']]
+        x= name_rate.groupby('User-ID').count()['Book-Rating'] > 200
+        literate_ppl= x[x].index
+        newrating= name_rate[name_rate['User-ID'].isin(literate_ppl)]
 
         y = newrating.groupby('Book-Title').count()['Book-Rating'] >= 50
         famousbooks = y[y].index
