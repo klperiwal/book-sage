@@ -1,5 +1,7 @@
 # Book-Sage
 
+<b>Dataset Link: https://www.kaggle.com/datasets/arashnic/book-recommendation-dataset</b>
+
 ## Overview:-
 The Book-Sage is a book recommendation system which uses collaborative filtering-based system design to provide personalized recommendations to users based on their preferences and interactions. The system uses a combination of user ratings, book features, and similarity metrics to generate relevant and engaging recommendations.
 
@@ -48,13 +50,17 @@ To get started with <b>BookSage</b>, follow these steps:
    pip install -r requirements.txt
    ```
 
- 4- Run the app.py :
+4- Install the books dataset from the given link:<br>
+     <p> <b>Dataset Link: https://www.kaggle.com/datasets/arashnic/book-recommendation-dataset</b>
+      <br> Add the dataset to the corresponding relative path: '__/Dataset/filename__'</p>
+   
+5- Run the app.py :
 
    ```bash
    python app.py
    ```
- 5- Start the Streamlit app to get the list of recommendation:
+6- Start the Streamlit app to get the list of recommendation:
    ```bash
    streamlit run app.py
    ```
-  Visit the app in your web browser to use it(by default, it runs on `http://localhost:8501`).
+  Visit the app in your web browser to use it (Browser link: `http://localhost:8501`).
